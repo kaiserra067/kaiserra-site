@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kaiserra – Games and mods, built with AI</title>
+<meta name="description" content="Kaiserra builds strategy games and math-heavy game mods using AI-assisted development. Current focus: Ra Strategy, a real-time strategy game set in World War II.">
+<link rel="canonical" href="https://kaiserra.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kaiserra">
+<meta property="og:title" content="Kaiserra – Games and mods, built with AI">
+<meta property="og:description" content="Strategy games and math-heavy game mods built with AI. Current focus: Ra Strategy, a real-time strategy game set in World War II.">
+<meta property="og:url" content="https://kaiserra.com/">
+<meta property="og:image" content="https://kaiserra.com/assets/logo.png">
+<meta name="theme-color" content="#16263A">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #16263A;
+    --grid: #2A4057;
+    --sun: #F2B134;
+    --paper: #E9E4D4;
+    --muted: #A9B4BF;
+    --signal: #D4553A;
+    --head: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "Newsreader", Georgia, "Times New Roman", serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--night);
+    color: var(--paper);
+    font-family: var(--body);
+    font-size: 1.15rem;
+    line-height: 1.6;
+  }
+  a { color: var(--sun); text-underline-offset: 3px; }
+  a:focus-visible, .btn:focus-visible { outline: 3px solid var(--paper); outline-offset: 3px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+
+  header.top { padding: 1.5rem 0; }
+  header.top .wrap { display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: var(--head); font-weight: 800; font-size: 1.25rem; letter-spacing: 0.01em; color: var(--paper); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .logo-icon { display: block; width: 34px; height: 34px; }
+  nav a { font-family: var(--head); font-weight: 500; font-size: 0.95rem; color: var(--paper); text-decoration: none; margin-left: 1.5rem; }
+  nav a:hover { color: var(--sun); }
+
+  .hero { padding: 3rem 0 5rem; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 3rem; align-items: center; }
+  h1 {
+    font-family: var(--head); font-weight: 800;
+    font-size: clamp(2.4rem, 5.4vw, 4.2rem);
+    line-height: 1.02; letter-spacing: -0.02em;
+    margin: 0 0 1.5rem;
+  }
+  .lede { max-width: 34rem; color: var(--paper); margin: 0 0 2rem; }
+  .btn {
+    display: inline-block; background: var(--sun); color: var(--night);
+    font-family: var(--head); font-weight: 800; font-size: 1rem;
+    padding: 0.8rem 1.4rem; border-radius: 3px; text-decoration: none;
+  }
+  .btn:hover { background: var(--paper); }
+  .btn.ghost { background: transparent; color: var(--paper); border: 1px solid var(--grid); margin-left: 0.75rem; }
+  .btn.ghost:hover { border-color: var(--sun); color: var(--sun); }
+
+  .map { width: 100%; height: auto; display: block; }
+  .ring { fill: none; stroke: var(--sun); transform-box: fill-box; transform-origin: center; }
+  .ring.r1 { stroke-opacity: .65; }
+  .ring.r2 { stroke-opacity: .45; }
+  .ring.r3 { stroke-opacity: .28; }
+  .ring.r4 { stroke-opacity: .16; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ring { animation: expand 1.4s cubic-bezier(.2,.7,.2,1) both; }
+    .ring.r2 { animation-delay: .25s; }
+    .ring.r3 { animation-delay: .5s; }
+    .ring.r4 { animation-delay: .75s; }
+    .unit { animation: appear .6s ease both; animation-delay: 1.4s; }
+  }
+  @keyframes expand { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+
+  section { padding: 4.5rem 0; border-top: 1px solid var(--grid); }
+  h2 { font-family: var(--head); font-weight: 800; font-size: clamp(1.8rem, 3.4vw, 2.5rem); line-height: 1.1; letter-spacing: -0.01em; margin: 0 0 2.5rem; max-width: 30rem; }
+
+  .ledger { list-style: none; margin: 0; padding: 0; }
+  .ledger li { display: grid; grid-template-columns: 15rem 1fr; gap: 2rem; padding: 1.75rem 0; border-top: 1px solid var(--grid); }
+  .ledger li:last-child { border-bottom: 1px solid var(--grid); }
+  .ledger h3 { font-family: var(--head); font-weight: 800; font-size: 1.35rem; margin: 0 0 0.25rem; }
+  .status { font-family: var(--head); font-weight: 500; font-size: 0.9rem; color: var(--muted); }
+  .status.live { color: var(--sun); }
+  .ledger p { margin: 0; max-width: 40rem; }
+
+  .how { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+  .how p { margin: 0 0 1rem; }
+  .how strong { font-family: var(--head); font-weight: 800; }
+
+  .contact p { max-width: 34rem; margin: 0 0 1.5rem; }
+  .channels { list-style: none; margin: 2rem 0 0; padding: 0; }
+  .channels li { padding: 0.6rem 0; border-top: 1px solid var(--grid); max-width: 24rem; }
+  .channels li:last-child { border-bottom: 1px solid var(--grid); }
+  .channels span { display: inline-block; width: 6rem; font-family: var(--head); font-weight: 500; font-size: 0.95rem; color: var(--muted); }
+  footer { border-top: 1px solid var(--grid); padding: 2rem 0 3rem; color: var(--muted); font-size: 0.95rem; }
+
+  @media (max-width: 820px) {
+    .hero .wrap, .how { grid-template-columns: 1fr; }
+    .ledger li { grid-template-columns: 1fr; gap: 0.5rem; }
+    .hero { padding-top: 1.5rem; }
+    .btn.ghost { margin-left: 0; margin-top: 0.75rem; }
+    nav a { margin-left: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top">Kaiserra<img class="logo-icon" src="assets/logo.png" alt="" width="34" height="34"></a>
+    <nav aria-label="Main">
+      <a href="#work">Work</a>
+      <a href="#approach">Approach</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Strategy games and mods, built with AI.</h1>
+        <p class="lede">Kaiserra is a small studio that uses AI as its engineering team. We design the rules and check the math; AI writes the code. Our first game, Ra Strategy, is a real-time strategy game set in World War II.</p>
+        <a class="btn" href="#work">See what we're building</a>
+        <a class="btn ghost" href="#contact">Get in touch</a>
+      </div>
+
+      <svg class="map" viewBox="0 0 600 520" role="img" aria-label="Concept art of Ra Strategy: a top-down view of a command camp with iron, food and ammunition buildings, roads, units, fog of war, a resource bar and a minimap">
+        <defs>
+          <pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M40 0H0V40" fill="none" stroke="#2A4057" stroke-width="1" opacity=".7"/>
+          </pattern>
+          <radialGradient id="fog" cx="50%" cy="52%" r="62%">
+            <stop offset="55%" stop-color="#16263A" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#16263A" stop-opacity=".92"/>
+          </radialGradient>
+          <clipPath id="frame"><rect width="600" height="520" rx="4"/></clipPath>
+        </defs>
+
+        <g clip-path="url(#frame)">
+          <rect width="600" height="520" fill="#1B2F45"/>
+          <rect width="600" height="520" fill="url(#g)"/>
+
+          <!-- river -->
+          <path d="M-10 400 C 110 350, 200 450, 330 415 S 520 320, 610 360" fill="none" stroke="#2D5878" stroke-width="26" stroke-linecap="round" opacity=".85"/>
+          <path d="M-10 400 C 110 350, 200 450, 330 415 S 520 320, 610 360" fill="none" stroke="#3E7396" stroke-width="2" stroke-dasharray="2 14" opacity=".8"/>
+
+          <!-- forests -->
+          <g fill="#1F4A44" opacity=".9">
+            <circle cx="70" cy="110" r="22"/><circle cx="96" cy="128" r="18"/><circle cx="58" cy="140" r="16"/><circle cx="90" cy="96" r="14"/>
+            <circle cx="520" cy="250" r="20"/><circle cx="545" cy="270" r="17"/><circle cx="505" cy="276" r="14"/>
+            <circle cx="150" cy="300" r="15"/><circle cx="170" cy="318" r="12"/>
+          </g>
+
+          <!-- roads -->
+          <g fill="none" stroke="#8D7B55" stroke-width="3" stroke-dasharray="7 6" opacity=".9">
+            <path d="M300 255 L190 175"/>
+            <path d="M300 255 L420 175"/>
+            <path d="M300 255 L410 330"/>
+            <path d="M300 255 L260 330 L150 290"/>
+          </g>
+
+          <!-- camp range rings -->
+          <circle class="ring r3" cx="300" cy="255" r="125" stroke-width="1.5"/>
+          <circle class="ring r2" cx="300" cy="255" r="85" stroke-width="1.5"/>
+          <circle class="ring r1" cx="300" cy="255" r="48" stroke-width="2"/>
+
+          <!-- command camp -->
+          <circle cx="300" cy="255" r="22" fill="#F2B134"/>
+          <circle cx="300" cy="255" r="9" fill="#16263A"/>
+          <path d="M300 255 V225" stroke="#E9E4D4" stroke-width="2"/>
+          <path d="M300 225 L316 230 L300 236 Z" fill="#D4553A"/>
+
+          <!-- buildings -->
+          <g font-family="Archivo, Arial, sans-serif" font-size="12" font-weight="500" fill="#E9E4D4">
+            <g>
+              <rect x="170" y="156" width="40" height="30" fill="#2B4157" stroke="#8FA3B5" stroke-width="1.5"/>
+              <path d="M180 178 L190 162 L200 178 Z" fill="#8FA3B5"/>
+              <text x="190" y="205" text-anchor="middle">Iron mine</text>
+            </g>
+            <g>
+              <rect x="400" y="156" width="40" height="30" fill="#2B4157" stroke="#E9E4D4" stroke-width="1.5"/>
+              <circle cx="420" cy="171" r="8" fill="#E9E4D4"/>
+              <text x="420" y="205" text-anchor="middle">Farm</text>
+            </g>
+            <g>
+              <rect x="390" y="315" width="40" height="30" fill="#2B4157" stroke="#F2B134" stroke-width="1.5"/>
+              <path d="M410 321 L420 330 L410 339 L400 330 Z" fill="#F2B134"/>
+              <text x="410" y="364" text-anchor="middle">Ammo depot</text>
+            </g>
+            <g>
+              <rect x="130" y="276" width="36" height="28" fill="#2B4157" stroke="#8FA3B5" stroke-width="1.5" stroke-dasharray="4 3"/>
+              <text x="148" y="322" text-anchor="middle" fill="#A9B4BF">Under construction</text>
+            </g>
+          </g>
+
+          <!-- selected units -->
+          <rect x="226" y="283" width="62" height="40" fill="none" stroke="#F2B134" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <g class="unit" fill="#E9E4D4">
+            <rect x="234" y="291" width="10" height="10"/>
+            <rect x="252" y="291" width="10" height="10"/>
+            <rect x="270" y="291" width="10" height="10"/>
+            <rect x="243" y="306" width="10" height="10"/>
+            <rect x="261" y="306" width="10" height="10"/>
+          </g>
+
+          <!-- far units and enemy contact -->
+          <g class="unit" fill="#E9E4D4">
+            <rect x="452" y="212" width="9" height="9"/><rect x="466" y="222" width="9" height="9"/>
+          </g>
+          <g class="unit" fill="#D4553A">
+            <path d="M52 220 l9 -16 l9 16 z"/><path d="M78 240 l9 -16 l9 16 z"/>
+          </g>
+        </g>
+
+        <!-- fog of war -->
+        <rect width="600" height="520" rx="4" fill="url(#fog)"/>
+
+        <!-- resource bar -->
+        <g font-family="Archivo, Arial, sans-serif" font-size="14" font-weight="500" fill="#E9E4D4">
+          <rect width="600" height="36" rx="4" fill="#0F1D2D"/>
+          <path d="M20 24 L28 10 L36 24 Z" fill="#8FA3B5"/><text x="44" y="23">Iron 120</text>
+          <circle cx="152" cy="17" r="7" fill="#E9E4D4"/><text x="166" y="23">Food 85</text>
+          <path d="M270 17 L277 10 L284 17 L277 24 Z" fill="#F2B134"/><text x="292" y="23">Ammo 40</text>
+          <text x="388" y="23" fill="#A9B4BF">Population 12</text>
+        </g>
+
+        <!-- minimap -->
+        <g>
+          <rect x="488" y="424" width="96" height="76" fill="#0F1D2D" stroke="#2A4057"/>
+          <path d="M488 470 C 520 455, 545 485, 584 466" fill="none" stroke="#2D5878" stroke-width="5"/>
+          <circle cx="536" cy="460" r="4" fill="#F2B134"/>
+          <rect x="514" y="448" width="2" height="2" fill="#E9E4D4"/>
+          <path d="M498 438 l3 -5 l3 5 z" fill="#D4553A"/>
+          <rect x="516" y="444" width="40" height="30" fill="none" stroke="#E9E4D4" stroke-width="1"/>
+        </g>
+
+        <text x="16" y="506" font-family="Archivo, Arial, sans-serif" font-size="12" font-weight="500" fill="#A9B4BF">Concept art for Ra Strategy. Not final.</text>
+      </svg>
+    </div>
+  </div>
+
+  <section id="work">
+    <div class="wrap">
+      <h2>What we build</h2>
+      <ul class="ledger">
+        <li>
+          <div>
+            <h3>Ra Strategy</h3>
+            <span class="status live">Starting development</span>
+          </div>
+          <p>A real-time strategy game set in World War II, starting with Germany and the Soviet Union. You pick a nation, begin with one district officer, and raise a command camp. From there you build iron, food and ammunition production, and your population decides how much food and ammunition you burn through. Single-player scenarios and multiplayer on a chosen map are both planned.</p>
+        </li>
+        <li>
+          <div>
+            <h3>Minecraft mods - servers</h3>
+            <span class="status">Old product, completed</span>
+          </div>
+          <p>Gameplay changes for Minecraft, from simple number tweaks to new interfaces and new mechanics, along with server work. Built and tested with AI.</p>
+        </li>
+        <li>
+          <div>
+            <h3>Grand strategy mods</h3>
+            <span class="status">Old product, completed</span>
+          </div>
+          <p>Mods for games in the Hearts of Iron IV mold, where supply, production and combat all come down to formulas that have to balance. We built and balanced them with AI.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="approach">
+    <div class="wrap">
+      <h2>How we work</h2>
+      <div class="how">
+        <div>
+          <p><strong>Rules first.</strong> Every system starts as a plain description of how it should behave: how fast a camp produces iron, how much food a unit eats, what a mod should change.</p>
+          <p><strong>AI writes the code.</strong> We hand the description to AI, run what comes back, and iterate until it behaves.</p>
+        </div>
+        <div>
+          <p><strong>Math gets checked.</strong> Strategy games live or die on their numbers. We test the formulas on their own before they go anywhere near a player.</p>
+          <p><strong>Small and fast.</strong> A small team with AI can try more ideas in a week than a large one can in a month, and drop the ones that aren't fun.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <h2>Contact</h2>
+      <p>Questions about Ra Strategy, mods, or working with us? Write to us.</p>
+      <a class="btn" href="mailto:hello@kaiserra.com">hello@kaiserra.com</a>
+      <ul class="channels">
+        <li><span>Kick</span> <a href="https://kick.com/111111kaiser" target="_blank" rel="noopener">111111kaiser</a></li>
+        <li><span>Discord</span> kaiser.ra</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 Kaiserra. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
