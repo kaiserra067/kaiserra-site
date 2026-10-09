@@ -71,8 +71,8 @@
   .track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; list-style: none; margin: 0; padding: 0; border: 1px solid var(--grid); border-radius: 4px; }
   .track::-webkit-scrollbar { display: none; }
   .track:focus-visible { outline: 3px solid var(--paper); outline-offset: 3px; }
-  .slide { flex: 0 0 100%; scroll-snap-align: start; }
-  .slide p { margin: 0; padding: 0.6rem 0.8rem; font-family: var(--head); font-weight: 500; font-size: 0.9rem; background: #0F1D2D; }
+  .slide { flex: 0 0 100%; scroll-snap-align: start; display: flex; flex-direction: column; }
+  .slide p { flex: 1; margin: 0; padding: 0.6rem 0.8rem; font-family: var(--head); font-weight: 500; font-size: 0.9rem; background: #0F1D2D; }
   .zoom { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
   .zoom img { display: block; width: 100%; height: auto; }
   .zoom:focus-visible { outline: 3px solid var(--sun); outline-offset: -3px; }
